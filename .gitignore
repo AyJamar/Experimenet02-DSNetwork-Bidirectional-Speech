@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.grade/
+students.csv
+.teacher/
+results/*
+!results/README.md

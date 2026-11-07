@@ -1,0 +1,81 @@
+name: 实验二自动评分
+run-name: 实验二 PR ${{ inputs.pr_number }} 自动评分
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 学生PR编号（由提交触发器自动填写）
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: lab02-pr-${{ inputs.pr_number }}
+  cancel-in-progress: true
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 获取当前学生版本与教师框架
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: python automation/collect_submission.py
+      - name: 构建教师评分环境
+        run: docker build -t lab02-grader -f grading/Dockerfile .
+      - name: 隔离执行学生代码并评分
+        run: python grading/run_grading.py --workspace submission-work --output reports
+      - name: 评分摘要
+        if: always()
+        run: |
+          if [ -f reports/grade_result.txt ]; then
+            cat reports/grade_result.txt >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '评分未完成：请查看失败步骤。未生成报告不表示0分。' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: grading-report
+          path: reports/
+          if-no-files-found: error
+  publish:
+    needs: grade
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        if: needs.grade.result == 'success'
+        with:
+          name: grading-report
+          path: reports
+      - name: 更新PR反馈与37人成绩表
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          GRADE_JOB_RESULT: ${{ needs.grade.result }}
+          TRACKING_ISSUE_NUMBER: ${{ vars.TRACKING_ISSUE_NUMBER }}
+          CLASS_ROSTER_JSON: ${{ secrets.CLASS_ROSTER_JSON }}
+        run: python automation/publish_result.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: student-grades
+          path: tracking/
