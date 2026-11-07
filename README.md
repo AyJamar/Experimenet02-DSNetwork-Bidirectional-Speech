@@ -4,6 +4,8 @@
 
 建议120分钟。教师提供帧、端口、时钟、绘图和测试；学生补全4个函数。无需网页、真实电话或麦克风。
 
+配套[Word实验规范与操作指南](materials/实验二_PRD_数字交换网络与双向话路配置.docx)、[16页讲授课件](materials/实验二_数字交换网络与双向话路_教师讲授版.pptx)与[自动成绩看板](https://github.com/jwentong/Experimenet02-DSNetwork-Bidirectional-Speech/issues/1)。
+
 ## 1 获取与运行
 
 先Fork本仓库，再Clone个人Fork，将YOUR-USERNAME替换为自己的账号。
