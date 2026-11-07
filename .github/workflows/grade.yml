@@ -1,5 +1,4 @@
 name: 实验二自动评分
-run-name: 实验二 PR ${{ inputs.pr_number }} 自动评分
 on:
   workflow_dispatch:
     inputs:
