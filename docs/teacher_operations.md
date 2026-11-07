@@ -6,7 +6,7 @@
 1. submission.yml使用pull_request_target，仅处理PR元数据并调用workflow_dispatch，不检出或执行学生代码。
 2. grade.yml仅使用main中的教师工作流、测试和依赖；collect_submission只提取指定任务文件、结果、报告和自拟测试。学生代码在禁网络、非root、只读文件系统、资源受限的Docker容器内执行，不传入教师凭据。
 3. publish任务在另一台runner上解析教师评分报告，核对当前提交，更新PR机器人评论并输出CSV。旧提交不会覆盖新提交成绩。
-4. board.yml在评分结束后自动重读全部PR，串行更新37人成绩看板。模拟与未匹配提交单独记录。
+4. 同一个评分工作流的board任务在反馈结束后自动重读全部PR，串行更新37人成绩看板。模拟与未匹配提交单独记录。board.yml仅保留为教师维护入口，日常评分不依赖手动运行。
 
 ## 一次性配置
 启用Actions，允许上述受信任工作流使用声明的最小权限。变量TRACKING_ISSUE_NUMBER指向成绩看板Issue。Secret CLASS_ROSTER_JSON保存教师授权的班级名单，不进入公开代码；仅反馈和看板任务读取。公开表格的姓名学号脱敏，保留名单序号供教师对应本地完整名单。

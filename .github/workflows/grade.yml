@@ -78,3 +78,30 @@ jobs:
         with:
           name: student-grades
           path: tracking/
+  board:
+    needs: publish
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+    concurrency:
+      group: lab02-grade-board
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: 汇总当前全部PR并更新班级看板
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRACKING_ISSUE_NUMBER: ${{ vars.TRACKING_ISSUE_NUMBER }}
+          CLASS_ROSTER_JSON: ${{ secrets.CLASS_ROSTER_JSON }}
+        run: python automation/update_board.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: class-gradebook
+          path: tracking/

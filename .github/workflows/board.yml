@@ -1,8 +1,5 @@
 name: 实验二成绩看板
 on:
-  workflow_run:
-    workflows: [实验二自动评分]
-    types: [completed]
   workflow_dispatch:
 permissions:
   contents: read
