@@ -13,6 +13,8 @@ E:\Prd\test2\Experimenet02-DSNetwork-Bidirectional-Speech
 由原有src.run_experiment生成results中的两个JSON和PNG。
 不修改教师提供的models、engine、run_experiment、grading测试及评分器。
 未虚构姓名、学号或教师云端成绩。
+报告首次生成时如实注明未获姓名和学号；收到本人明确回复后，
+补齐REPORT.md署名并删除信息尚缺的过时说明。
 
 ## 建议与采纳
 
